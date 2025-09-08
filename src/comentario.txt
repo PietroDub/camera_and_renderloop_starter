@@ -1,0 +1,26 @@
+const group = new THREE.Group();
+group.add(cubeMesh);
+group.add(cubeMesh2);
+group.add(cubeMesh3);
+
+scene.add(group)
+
+// const cubeMesh2 = new THREE.Mesh( cubeGeometry, cubeMaterial)
+// const cubeMesh3 = new THREE.Mesh( cubeGeometry, cubeMaterial)
+// cubeMesh2.position.x = 2;
+// cubeMesh3.position.x = -2;
+
+======================================================================
+
+// const aspectRatio = window.innerWidth / window.innerHeight;
+
+// //initialize Orthohraphic camera
+// const camera = new THREE.OrthographicCamera(
+//   -1 * aspectRatio, 1 * aspectRatio, 1, -1, 0.1, 200
+// )
+
+======================================================================
+cubeMesh.rotation.reorder('YXZ')
+
+cubeMesh.rotation.y = THREE.MathUtils.degToRad(45);
+cubeMesh.rotation.x = THREE.MathUtils.degToRad(90);
