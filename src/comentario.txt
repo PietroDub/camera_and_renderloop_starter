@@ -24,3 +24,30 @@ cubeMesh.rotation.reorder('YXZ')
 
 cubeMesh.rotation.y = THREE.MathUtils.degToRad(45);
 cubeMesh.rotation.x = THREE.MathUtils.degToRad(90);
+
+=====================================================================
+
+  //fazendo com q a animação tenha uma velocidade
+  const currentTime = clock.getElapsedTime();
+  const delta = currentTime - previousTime;
+  previousTime = currentTime;
+
+  cubeMesh.rotation.y += THREE.MathUtils.degToRad(1) * delta * 20;
+  
+  Math.sin(currentTime);
+
+  cubeMesh.scale.x = Math.sin(currentTime);
+
+  ========================================================================
+
+  const vertices = new Float32Array([
+  0,0,0, //arestas da forma
+  0,2,0,
+  2,0,0
+]);
+
+const bufferAttribute = new THREE.BufferAttribute(vertices, 3);
+const geometry = new THREE.BufferGeometry();
+geometry.setAttribute('position', bufferAttribute);
+
+const cubeMesh = new THREE.Mesh( geometry, cubeMaterial)

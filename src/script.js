@@ -4,11 +4,14 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 // initialize the scene
 const scene = new THREE.Scene()
 
+//criando formas
+const geometry = new THREE.TorusKnotGeometry(10, 3, 90, 16)
+
 // add objects to the scene
-const cubeGeometry = new THREE.BoxGeometry(1,1,1)
+// const cubeGeometry = new THREE.BoxGeometry(1,1,1, 2, 2, 2);
 const cubeMaterial = new THREE.MeshBasicMaterial({color: "red", wireframe: true})
 
-const cubeMesh = new THREE.Mesh( cubeGeometry, cubeMaterial)
+const cubeMesh = new THREE.Mesh( geometry, cubeMaterial)
 
 scene.add(cubeMesh) 
 // cubeMesh3.scale.setScalar(2);
@@ -41,7 +44,7 @@ renderer.setPixelRatio(window.devicePixelRatio)
 //initialize the controls
 const controls = new OrbitControls(camera, canvas)
 controls.enableDamping = true;
-// controls.autoRotate = true;
+controls.autoRotate = true;
 
 window.addEventListener('resize', () =>{
   camera.aspect = window.innerWidth /   window.innerHeight;
@@ -56,16 +59,7 @@ let previousTime = 0;
 //render the scene
 const renderloop = () => {
 
-  //fazendo com q a animação tenha uma velocidade
-  const currentTime = clock.getElapsedTime();
-  const delta = currentTime - previousTime;
-  previousTime = currentTime;
 
-  cubeMesh.rotation.y += THREE.MathUtils.degToRad(1) * delta * 20;
-  
-  Math.sin(currentTime);
-
-  cubeMesh.scale.x = Math.sin(currentTime);
 
   controls.update();
   renderer.render(scene, camera);
