@@ -51,3 +51,15 @@ const geometry = new THREE.BufferGeometry();
 geometry.setAttribute('position', bufferAttribute);
 
 const cubeMesh = new THREE.Mesh( geometry, cubeMaterial)
+
+====================================================================
+//Fog Concept
+const fog = new THREE.Fog(0xffffff, 1, 10);
+scene.fog = fog;
+// mudando o fundo
+scene.background = new THREE.Color('white');
+
+===================================================================
+const material = new THREE.MeshPhongMaterial();
+ material.shininess = 100;
+ material.color = new THREE.Color('red')
