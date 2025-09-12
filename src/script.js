@@ -18,15 +18,17 @@ const sphereGeometry = new THREE.SphereGeometry(0.5, 32, 32);
 const cylinderGeometry = new THREE.CylinderGeometry(0.5, 0.5, 1, 32)
 
 // initialize the texture
-const grassTexture = textureLoader.load('/textures/whispy-grass-meadow-bl/whispy-grass-meadow-bl/whispy-grass-meadow-bl/wispy-grass-meadow_albedo.png');
-grassTexture.repeat.set(2, 2);
-grassTexture.wrapS = THREE.RepeatWrapping;
-grassTexture.wrapT = THREE.RepeatWrapping;
+const grassAlbedo = textureLoader.load('/textures/whispy-grass-meadow-bl/whispy-grass-meadow-bl/whispy-grass-meadow-bl/wispy-grass-meadow_albedo.png');
+const grassAo = textureLoader.load('/textures/whispy-grass-meadow-bl/whispy-grass-meadow-bl/whispy-grass-meadow-bl/wispy-grass-meadow_ao.png');
+const grassHeight = textureLoader.load('/textures/whispy-grass-meadow-bl/whispy-grass-meadow-bl/whispy-grass-meadow-bl/wispy-grass-meadow_height.png');
+const grassMetalic = textureLoader.load('/textures/whispy-grass-meadow-bl/whispy-grass-meadow-bl/whispy-grass-meadow-bl/wispy-grass-meadow_metallic.png');
+const grassNormal = textureLoader.load('/textures/whispy-grass-meadow-bl/whispy-grass-meadow-bl/whispy-grass-meadow-bl/wispy-grass-meadow_normal-ogl.png');
+const grassRoughness = textureLoader.load('/textures/whispy-grass-meadow-bl/whispy-grass-meadow-bl/whispy-grass-meadow-bl/wispy-grass-meadow_roughness.png');
 
+grassAlbedo.offset.x = 0.5;
 const material = new THREE.MeshStandardMaterial();
 // material.color = new THREE.Color('cyan');
-material.map = grassTexture;
-
+material.map = grassAlbedo;
 //inicialize o grupo
 const group =  new THREE.Group();
 
@@ -39,8 +41,8 @@ mesh2.position.x = 1.5
 
 const plane = new THREE.Mesh(planeGeometry, material);
 plane.position.x = -1.5
-plane.rotation.x = -(Math.PI * 0.5);
-plane.scale.set(1000, 1000)
+// plane.rotation.x = -(Math.PI * 0.5);
+// plane.scale.set(1000, 1000)
 
 const sphere = new THREE.Mesh()
 sphere.geometry = sphereGeometry;
@@ -52,11 +54,11 @@ cylinder.geometry = cylinderGeometry;
 cylinder.material = material;
 cylinder.position.y = 1.5;
 
-// scene.add(mesh2);
-// scene.add(cubeMesh); 
+scene.add(mesh2);
+ scene.add(cubeMesh); 
 scene.add(plane);
-// group.add(sphere, cylinder);
-// scene.add(group);
+group.add(sphere, cylinder);
+scene.add(group);
 // cubeMesh3.scale.setScalar(2);
 // cubeMesh.scale.set(1.5, 1.5, 1.5)
 
@@ -113,7 +115,7 @@ let previousTime = 0;
 //render the scene
 const renderloop = () => {
   
-  // //rotação em conjunto
+  //rotação em conjunto
   // scene.children.forEach((children) => {
   //   if(children instanceof THREE.Mesh){
   //     children.rotation.y += 0.01;
