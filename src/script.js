@@ -11,7 +11,11 @@ const scene = new THREE.Scene()
 // initialize the loader
 const textureLoader = new THREE.TextureLoader();
 //criando formas
-const geometry = new THREE.BoxGeometry(1, 1, 1, 1)
+const geometry = new THREE.BoxGeometry(1, 1, 1, 1);
+
+const uv2 = new THREE.BufferAttribute(geometry.attributes.uv.array, 2);
+geometry.setAttribute('uv2', uv2)
+
 const planeGeometry = new THREE.PlaneGeometry(1,1);
 const torusKnotGeometry = new THREE.TorusKnotGeometry(0.3, 0.1, 100, 16);
 const sphereGeometry = new THREE.SphereGeometry(0.5, 32, 32);
@@ -25,10 +29,23 @@ const grassMetalic = textureLoader.load('/textures/whispy-grass-meadow-bl/whispy
 const grassNormal = textureLoader.load('/textures/whispy-grass-meadow-bl/whispy-grass-meadow-bl/whispy-grass-meadow-bl/wispy-grass-meadow_normal-ogl.png');
 const grassRoughness = textureLoader.load('/textures/whispy-grass-meadow-bl/whispy-grass-meadow-bl/whispy-grass-meadow-bl/wispy-grass-meadow_roughness.png');
 
-grassAlbedo.offset.x = 0.5;
 const material = new THREE.MeshStandardMaterial();
-// material.color = new THREE.Color('cyan');
 material.map = grassAlbedo;
+material.roughnessMap = grassRoughness;
+material.roughness = 1;
+
+material.metalnessMap = grassMetalic;
+material.metalness = 1;
+
+//colocando profundidade na textura
+material.normalMap = grassNormal;
+
+material.displacementMap = grassHeight;
+material.displacementScale = 0.1;
+
+material.aoMap =  grassAo;
+material.aoMapIntensity = 0;1;
+
 //inicialize o grupo
 const group =  new THREE.Group();
 
