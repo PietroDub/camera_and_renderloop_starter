@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { color, distance } from 'three/tsl';
 import { Pane } from 'tweakpane';
 
 // initialize the pane
@@ -8,77 +9,117 @@ const pane = new Pane();
 // initialize the scene
 const scene = new THREE.Scene()
 
-// initialize the loader
+//add the texture loader
 const textureLoader = new THREE.TextureLoader();
-//criando formas
-const geometry = new THREE.BoxGeometry(1, 1, 1, 1);
 
-const uv2 = new THREE.BufferAttribute(geometry.attributes.uv.array, 2);
-geometry.setAttribute('uv2', uv2)
+//adding Textures 
+const sunTexture = textureLoader.load('/textures/solar/2k_sun.jpg')
+const mercuryTexture = textureLoader.load('/textures/solar/2k_mercury.jpg')
+const venusTexture = textureLoader.load('/textures/solar/2k_venus_surface.jpg')
+const earthTextue = textureLoader.load('/textures/solar/2k_earth_daymap.jpg')
+const moonTexture = textureLoader.load('/textures/solar/2k_moon.jpg')
+const marsTexture = textureLoader.load('/textures/solar/2k_mars.jpg') 
 
-const planeGeometry = new THREE.PlaneGeometry(1,1);
-const torusKnotGeometry = new THREE.TorusKnotGeometry(0.3, 0.1, 100, 16);
-const sphereGeometry = new THREE.SphereGeometry(0.5, 32, 32);
-const cylinderGeometry = new THREE.CylinderGeometry(0.5, 0.5, 1, 32)
+// add materials
+const mercuryMaterial = new THREE.MeshStandardMaterial({map: mercuryTexture});
+const venusMaterial = new THREE.MeshStandardMaterial({ map: venusTexture });
+const earthMaterial = new THREE.MeshStandardMaterial({ map: earthTextue });
+const moonMaterial = new THREE.MeshStandardMaterial({ map: moonTexture });
+const marsMaterial = new THREE.MeshStandardMaterial({ map: marsTexture });
 
-// initialize the texture
-const grassAlbedo = textureLoader.load('/textures/whispy-grass-meadow-bl/whispy-grass-meadow-bl/whispy-grass-meadow-bl/wispy-grass-meadow_albedo.png');
-const grassAo = textureLoader.load('/textures/whispy-grass-meadow-bl/whispy-grass-meadow-bl/whispy-grass-meadow-bl/wispy-grass-meadow_ao.png');
-const grassHeight = textureLoader.load('/textures/whispy-grass-meadow-bl/whispy-grass-meadow-bl/whispy-grass-meadow-bl/wispy-grass-meadow_height.png');
-const grassMetalic = textureLoader.load('/textures/whispy-grass-meadow-bl/whispy-grass-meadow-bl/whispy-grass-meadow-bl/wispy-grass-meadow_metallic.png');
-const grassNormal = textureLoader.load('/textures/whispy-grass-meadow-bl/whispy-grass-meadow-bl/whispy-grass-meadow-bl/wispy-grass-meadow_normal-ogl.png');
-const grassRoughness = textureLoader.load('/textures/whispy-grass-meadow-bl/whispy-grass-meadow-bl/whispy-grass-meadow-bl/wispy-grass-meadow_roughness.png');
+const sphereGeometry = new THREE.SphereGeometry(1, 32, 32);
+const sunMaterial = new THREE.MeshBasicMaterial({
+  map:sunTexture
+});
 
-const material = new THREE.MeshStandardMaterial();
-material.map = grassAlbedo;
-material.roughnessMap = grassRoughness;
-material.roughness = 1;
+const sun = new THREE.Mesh(
+  sphereGeometry, sunMaterial
+)
+sun.scale.setScalar(5)
+scene.add(sun);
 
-material.metalnessMap = grassMetalic;
-material.metalness = 1;
+  const planets = [
+    {
+      name: 'Mercury',
+      radius: 0.8,
+      distance: 10,
+      speed: 0.007, 
+      material: mercuryMaterial,
+      moons: [],
+    },
+    {
+      name: 'Venus',
+      radius: 0.8,
+      distance: 15,
+      speed: 0.007,
+      material: venusMaterial,
+      moons: [],
+    },
+    {
+      name: 'Earth',
+      radius: 1,
+      distance: 20,
+      speed: 0.005,
+      material: earthMaterial,
+      moons : [
+        {
+          name: 'Moon',
+          radius: 0.3,
+          distance: 3,
+          speed: 0.015,
+        }
+      ]
+    },
+    {
+      name: 'Mars',
+      radius: 0.7, 
+      distance: 25,
+      speed: 0.003,
+      material: marsMaterial,
+      moons: [
+        {
+          name: 'Phobos',
+          radius: 0.1,
+          distance: 2,
+          speed: 0.02,
+        },
+        {
+          name: 'Deimos',
+          radius: 0.2,
+          distance: 3,
+          speed: 0.015,
+          color: 0xffffff,
+        }
+      ]
+    },
+  ];
 
-//colocando profundidade na textura
-material.normalMap = grassNormal;
+  const planetsMeshes = planets.map((planet) =>{
+    //create the mesh
+    const planetMesh = new THREE.Mesh(
+      sphereGeometry,
+      planet.material
+    )
+    //set the scale
+    planetMesh.scale.setScalar(planet.radius)
+    planetMesh.position.x = planet.distance;
 
-material.displacementMap = grassHeight;
-material.displacementScale = 0.1;
+    //add it in the scene
+    scene.add(planetMesh);
 
-material.aoMap =  grassAo;
-material.aoMapIntensity = 0;1;
+    //passar pelas luas e criar
+    planet.moons.forEach((moon) =>{
+      const moonMesh = new THREE.Mesh(
+        sphereGeometry, moonMaterial
+      )
+      moonMesh.scale.setScalar(moon.radius)
+      moonMesh.position.x = moon.distance;
+      planetMesh.add(moonMesh)
+    })
+    return planetMesh
+  })
 
-//inicialize o grupo
-const group =  new THREE.Group();
-
-material.side = THREE.DoubleSide; //poder ser visto de ambos os lados
-
-const cubeMesh = new THREE.Mesh( geometry, material)
-
-const mesh2 = new THREE.Mesh(torusKnotGeometry, material);
-mesh2.position.x = 1.5
-
-const plane = new THREE.Mesh(planeGeometry, material);
-plane.position.x = -1.5
-// plane.rotation.x = -(Math.PI * 0.5);
-// plane.scale.set(1000, 1000)
-
-const sphere = new THREE.Mesh()
-sphere.geometry = sphereGeometry;
-sphere.material = material;
-sphere.position.y = -1.5;
-
-const cylinder = new THREE.Mesh()
-cylinder.geometry = cylinderGeometry;
-cylinder.material = material;
-cylinder.position.y = 1.5;
-
-scene.add(mesh2);
- scene.add(cubeMesh); 
-scene.add(plane);
-group.add(sphere, cylinder);
-scene.add(group);
-// cubeMesh3.scale.setScalar(2);
-// cubeMesh.scale.set(1.5, 1.5, 1.5)
-
+console.log(planetsMeshes)
 //inicializndo a luz
 const light = new THREE.AmbientLight(0xffffff, 1)
 scene.add(light)
@@ -89,7 +130,7 @@ scene.add(pointLight)
 
 const axesHelper = new THREE.AxesHelper(5);
 //adiciona o axes para seguir o cubo
-cubeMesh.add(axesHelper);
+
 
 //initialize the camera (perspective)
 const camera = new THREE.PerspectiveCamera(
@@ -102,7 +143,7 @@ camera.position.z = 10;
 camera.position.y = 5;
 
 
-cubeMesh.position.distanceTo(camera.position)
+sun.position.distanceTo(camera.position)
 
 // initialize the renderer
 const canvas = document.querySelector('canvas.threejs')
@@ -125,19 +166,17 @@ window.addEventListener('resize', () =>{
   renderer.setSize(window.innerWidth, window.innerHeight)
 })
 
-//initialize the clock
-const clock = new THREE.Clock()
-let previousTime = 0;
-
 //render the scene
 const renderloop = () => {
-  
-  //rotação em conjunto
-  // scene.children.forEach((children) => {
-  //   if(children instanceof THREE.Mesh){
-  //     children.rotation.y += 0.01;
-  //   }
-  // })
+  planetsMeshes.forEach((planet, index) => {
+    planet.rotation.y += planets[index].speed
+    planet.position.x = Math.sin(planet.rotation.y) * planets[index].distance
+    planet.position.z = Math.cos(planet.rotation.y) * planets[index].distance
+    planet.children.forEach((moon, moonIndex) =>{
+      moon.rotation.y += planets[index].moons[moonIndex].speed
+    })
+  })
+
   controls.update();
   renderer.render(scene, camera);
   window.requestAnimationFrame(renderloop);
