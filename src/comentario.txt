@@ -185,3 +185,13 @@ cubeMesh.add(axesHelper);
 
   moon.position.x = Math.sin(elapsedTime) * 2;
   moon.position.z = Math.cos(elapsedTime) * 2;
+
+
+  ==============================================================
+  //inicializndo a luz
+const light = new THREE.AmbientLight(0xffffff, 1)
+scene.add(light)
+
+const pointLight = new THREE.PointLight(0xffffff, 5)
+pointLight.position.set(2,2,2)
+scene.add(pointLight)

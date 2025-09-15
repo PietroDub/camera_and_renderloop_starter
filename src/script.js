@@ -11,6 +11,8 @@ const scene = new THREE.Scene()
 
 //add the texture loader
 const textureLoader = new THREE.TextureLoader();
+const cubeTextureLoader = new THREE.CubeTextureLoader();
+cubeTextureLoader.setPath('/textures/solar/cubeMap/')
 
 //adding Textures 
 const sunTexture = textureLoader.load('/textures/solar/2k_sun.jpg')
@@ -19,7 +21,19 @@ const venusTexture = textureLoader.load('/textures/solar/2k_venus_surface.jpg')
 const earthTextue = textureLoader.load('/textures/solar/2k_earth_daymap.jpg')
 const moonTexture = textureLoader.load('/textures/solar/2k_moon.jpg')
 const marsTexture = textureLoader.load('/textures/solar/2k_mars.jpg') 
+//const backgroundTexture = textureLoader.load('/textures/solar/2k_stars_milky_way.jpg')
+// scene.background =  backgroundTexture;
 
+const cubeMap = cubeTextureLoader.load([
+  'px.png',
+  'nx.png',
+  'py.png',
+  'ny.png',
+  'pz.png',
+  'nz.png'
+]);
+
+scene.background = cubeMap;
 // add materials
 const mercuryMaterial = new THREE.MeshStandardMaterial({map: mercuryTexture});
 const venusMaterial = new THREE.MeshStandardMaterial({ map: venusTexture });
@@ -120,17 +134,23 @@ scene.add(sun);
   })
 
 console.log(planetsMeshes)
-//inicializndo a luz
-const light = new THREE.AmbientLight(0xffffff, 1)
-scene.add(light)
-
-const pointLight = new THREE.PointLight(0xffffff, 5)
-pointLight.position.set(2,2,2)
-scene.add(pointLight)
 
 const axesHelper = new THREE.AxesHelper(5);
 //adiciona o axes para seguir o cubo
 
+//adiciona a luz
+
+const ambientLight = new THREE.AmbientLight(
+  0xffffff,
+  0.08
+)
+scene.add(ambientLight)
+
+const pointLight = new THREE.PointLight(
+  0xffff00,
+  40
+)
+scene.add(pointLight);
 
 //initialize the camera (perspective)
 const camera = new THREE.PerspectiveCamera(
@@ -168,12 +188,15 @@ window.addEventListener('resize', () =>{
 
 //render the scene
 const renderloop = () => {
-  planetsMeshes.forEach((planet, index) => {
-    planet.rotation.y += planets[index].speed
-    planet.position.x = Math.sin(planet.rotation.y) * planets[index].distance
-    planet.position.z = Math.cos(planet.rotation.y) * planets[index].distance
+  planetsMeshes.forEach((planet, planetIndex) => {
+    planet.rotation.y += planets[planetIndex].speed
+    planet.position.x = Math.sin(planet.rotation.y) * planets[planetIndex].distance
+    planet.position.z = Math.cos(planet.rotation.y) * planets[planetIndex].distance
     planet.children.forEach((moon, moonIndex) =>{
-      moon.rotation.y += planets[index].moons[moonIndex].speed
+      moon.rotation.y += planets[planetIndex].moons[moonIndex].speed
+      moon.position.x = Math.sin(moon.rotation.y) * planets[planetIndex].moons[moonIndex].distance
+      moon.position.z = Math.cos(moon.rotation.y) * planets[planetIndex].moons[moonIndex].distance
+
     })
   })
 
